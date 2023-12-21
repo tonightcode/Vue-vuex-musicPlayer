@@ -1,6 +1,7 @@
 import {getLyric} from 'api/song'
 import {ERR_OK} from 'api/config'
 import {Base64} from 'js-base64'
+import jsonp from 'common/js/jsonp'
 
 export default class Song {
   constructor({id, mid, singer, name, album, duration, image, url}) {
@@ -32,17 +33,35 @@ export default class Song {
   }
 }
 
-export function createSong(musicData) {
+export function createSong(musicData, vkey) {
   return new Song({
     id: musicData.songid,
     mid: musicData.songmid,
-    singer: filterSinger(musicData.singer),
+    singer: filterSinger(musicData.singer), // filterSinger 中处理一遍
     name: musicData.songname,
     album: musicData.albumname,
     duration: musicData.interval,
     image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    url: `https://dl.stream.qqmusic.qq.com/${musicData.songid}.m4a?guid=1329984726&vkey=E8A7BFD68425341AFAF0FC1BB21D4FB5AF06C917B55179DB1D7E2BE8F3ECC7EFC14AF845520D56C9812A22F2AFC7A43B14E0F71DE2BD7DB1&uin=0&fromtag=66`
+    url: `http://dl.stream.qqmusic.qq.com/C400${musicData.songmid}.m4a?fromtag=38&guid=5931742855&vkey=${vkey}`
   })
+}
+
+// 获取歌曲的vkey
+export function getSongVkey(songmid) {
+  const url = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg'
+  const data = Object.assign({}, {
+    callback: 'musicJsonCallback',
+    loginUin: 3051522991,
+    format: 'jsonp',
+    platform: 'yqq',
+    needNewCode: 0,
+    cid: 205361747,
+    uin: 3051522991,
+    guid: 5931742855,
+    songmid: songmid,
+    filename: `C400${songmid}.m4a`
+  })
+  return jsonp(url, data)
 }
 
 function filterSinger(singer) {
