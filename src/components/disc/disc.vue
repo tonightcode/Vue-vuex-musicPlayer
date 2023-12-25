@@ -9,7 +9,7 @@
   import {getSongList} from 'api/recommend'
   import {ERR_OK} from 'api/config'
   import {mapGetters} from 'vuex'
-  import {createSong, getSongVkey} from 'common/js/song'
+  import {createSong, getSongInfo} from 'common/js/song'
 
   export default {
     computed: {
@@ -47,7 +47,7 @@
         let result = []
         list.forEach((musicData) => {
           // ------------- 更新的加上vkey
-          getSongVkey(musicData.songmid).then((res) => {
+          getSongInfo(musicData.songmid).then((res) => {
             console.log(res)
             const vkey = res.data.items[0].vkey
             if (musicData.songid && musicData.albummid) {

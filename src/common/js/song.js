@@ -33,7 +33,7 @@ export default class Song {
   }
 }
 
-export function createSong(musicData, vkey) {
+export function createSong(musicData) {
   return new Song({
     id: musicData.songid,
     mid: musicData.songmid,
@@ -42,14 +42,24 @@ export function createSong(musicData, vkey) {
     album: musicData.albumname,
     duration: musicData.interval,
     image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    url: `http://dl.stream.qqmusic.qq.com/C400${musicData.songmid}.m4a?fromtag=38&guid=5931742855&vkey=${vkey}`
+    url: `http://dl.stream.qqmusic.qq.com/C400000qXnlU3cLQwg.m4a?fromtag=120032&guid=1836717936&vkey=65EE8BBBCFB8131FCF13B7F51D4C9EF8AEB5EDEC399628FDA1297F2F6018806F8E31FCE35899CC2ADF1101D37B601E2628F127AF35E717DC`
   })
 }
 
 // 获取歌曲的vkey
-export function getSongVkey(songmid) {
-  const url = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg'
-  const data = Object.assign({}, {
+export function getSongInfo(songmid) {
+  const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'
+  const data = Object.assign({
+    g_tk: 1124214810,
+    loginUin: global.uin || '0',
+    hostUin: 0,
+    inCharset: 'utf8',
+    outCharset: 'utf-8',
+    // format: 'json',
+    notice: 0,
+    platform: 'yqq.json',
+    needNewCode: 0
+  }, {
     callback: 'musicJsonCallback',
     loginUin: 3051522991,
     format: 'jsonp',
