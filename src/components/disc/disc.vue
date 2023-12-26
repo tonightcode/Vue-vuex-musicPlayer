@@ -49,9 +49,8 @@
           // ------------- 更新的加上vkey
           getSongInfo(musicData.songmid).then((res) => {
             console.log(res)
-            const vkey = res.data.items[0].vkey
             if (musicData.songid && musicData.albummid) {
-              result.push(createSong(musicData, vkey))
+              result.push(createSong(musicData))
             }
           })
         })

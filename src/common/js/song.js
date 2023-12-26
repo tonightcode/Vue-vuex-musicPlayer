@@ -1,10 +1,10 @@
-import {getLyric} from 'api/song'
-import {ERR_OK} from 'api/config'
-import {Base64} from 'js-base64'
-import jsonp from 'common/js/jsonp'
+import { getLyric } from 'api/song'
+import { ERR_OK } from 'api/config'
+import { Base64 } from 'js-base64'
+import axios from 'axios'
 
 export default class Song {
-  constructor({id, mid, singer, name, album, duration, image, url}) {
+  constructor({ id, mid, singer, name, album, duration, image, url }) {
     this.id = id
     this.mid = mid
     this.singer = singer
@@ -42,36 +42,74 @@ export function createSong(musicData) {
     album: musicData.albumname,
     duration: musicData.interval,
     image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    url: `http://dl.stream.qqmusic.qq.com/C400000qXnlU3cLQwg.m4a?fromtag=120032&guid=1836717936&vkey=65EE8BBBCFB8131FCF13B7F51D4C9EF8AEB5EDEC399628FDA1297F2F6018806F8E31FCE35899CC2ADF1101D37B601E2628F127AF35E717DC`
+    url: musicData.purl
   })
 }
 
 // 获取歌曲的vkey
 export function getSongInfo(songmid) {
-  const url = 'https://u.y.qq.com/cgi-bin/musics.fcg'
-  const data = Object.assign({
-    g_tk: 1124214810,
-    loginUin: global.uin || '0',
-    hostUin: 0,
-    inCharset: 'utf8',
-    outCharset: 'utf-8',
-    // format: 'json',
-    notice: 0,
-    platform: 'yqq.json',
-    needNewCode: 0
-  }, {
-    callback: 'musicJsonCallback',
-    loginUin: 3051522991,
-    format: 'jsonp',
-    platform: 'yqq',
-    needNewCode: 0,
-    cid: 205361747,
-    uin: 3051522991,
-    guid: 5931742855,
-    songmid: songmid,
-    filename: `C400${songmid}.m4a`
+  const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
+  const songmidList = songmid.split(',')
+  let quality = 128
+  let mediaId = ''
+  const guid = '1429839143'
+  const uin = global.uin || '0'
+  const fileType = {
+    m4a: {
+      s: 'C400',
+      e: '.m4a'
+    },
+    128: {
+      s: 'M500',
+      e: '.mp3'
+    },
+    320: {
+      s: 'M800',
+      e: '.mp3'
+    },
+    ape: {
+      s: 'A000',
+      e: '.ape'
+    },
+    flac: {
+      s: 'F000',
+      e: '.flac'
+    }
+  }
+  const fileInfo = fileType[quality]
+  const file = songmidList.map(_ => `${fileInfo.s}${_}${mediaId || _}${fileInfo.e}`)
+  const data = {
+    req_0: {
+      module: 'vkey.GetVkeyServer',
+      method: 'CgiGetVkey',
+      param: {
+        filename: file,
+        guid,
+        songmid: songmidList,
+        songtype: [0],
+        uin,
+        loginflag: 1,
+        platform: '20'
+      }
+    },
+    loginUin: uin,
+    comm: {
+      uin,
+      format: 'json',
+      ct: 24,
+      cv: 0
+    }
+  }
+  const params = Object.assign({
+    format: 'json',
+    sign: 'zzannc1o6o9b4i971602f3554385022046ab796512b7012',
+    data: JSON.stringify(data)
   })
-  return jsonp(url, data)
+  return axios.get(url, {
+    params: params
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
 }
 
 function filterSinger(singer) {
