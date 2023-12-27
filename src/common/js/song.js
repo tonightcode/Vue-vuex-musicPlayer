@@ -33,7 +33,7 @@ export default class Song {
   }
 }
 
-export function createSong(musicData) {
+export function createSong(musicData, purl) {
   return new Song({
     id: musicData.songid,
     mid: musicData.songmid,
@@ -42,15 +42,15 @@ export function createSong(musicData) {
     album: musicData.albumname,
     duration: musicData.interval,
     image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    url: musicData.purl
+    url: purl
   })
 }
 
 // 获取歌曲的vkey
 export function getSongInfo(songmid) {
-  const url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
+  const url = '/api/getSongInfo'
   const songmidList = songmid.split(',')
-  let quality = 128
+  let quality = 'm4a'
   let mediaId = ''
   const guid = '1429839143'
   const uin = global.uin || '0'
@@ -108,7 +108,7 @@ export function getSongInfo(songmid) {
   return axios.get(url, {
     params: params
   }).then((res) => {
-    return Promise.resolve(res.data)
+    return Promise.resolve(res.data.req_0.data.midurlinfo)
   })
 }
 

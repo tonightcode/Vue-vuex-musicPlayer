@@ -48,9 +48,8 @@
         list.forEach((musicData) => {
           // ------------- 更新的加上vkey
           getSongInfo(musicData.songmid).then((res) => {
-            console.log(res)
             if (musicData.songid && musicData.albummid) {
-              result.push(createSong(musicData))
+              result.push(createSong(musicData, res.purl))
             }
           })
         })

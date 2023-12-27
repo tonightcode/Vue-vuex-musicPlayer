@@ -55,6 +55,18 @@ apiRoutes.get('/getSongList', function (req, res) {
   })
 })
 
+apiRoutes.get('/getSongInfo', function (req, res) {
+  var url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
+  console.log(req.query)
+  axios.get(url, {
+    params: req.query
+  }).then((response) => {
+    res.json(response.data)
+  }).catch((e) => {
+    console.log("error")
+  })
+})
+
 apiRoutes.get('/lyric', function (req, res) {
   var url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
 
