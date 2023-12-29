@@ -1,4 +1,5 @@
 require('./check-versions')()
+const get = require('lodash.get');
 
 var config = require('../config')
 if (!process.env.NODE_ENV) {
@@ -57,13 +58,31 @@ apiRoutes.get('/getSongList', function (req, res) {
 
 apiRoutes.get('/getSongInfo', function (req, res) {
   var url = 'https://u.y.qq.com/cgi-bin/musicu.fcg'
-  console.log(req.query)
-  axios.get(url, {
-    params: req.query
-  }).then((response) => {
-    res.json(response.data)
+  let options = {
+    params: req.query,
+    headers: {
+      referer: 'https://y.qq.com/portal/player.html',
+      host: 'u.y.qq.com',
+      'content-type': 'application/x-www-form-urlencoded',
+      'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
+    }
+  }
+  axios.get(url, options).then((aa) => {
+    const response = aa.data;
+    const domain = get(response, 'req_0.data.sip', [])
+      .find(i => !i.startsWith('http://ws'))
+      || get(response, 'req_0.data.sip[0]');
+
+    let playUrl = {};
+    get(response, 'req_0.data.midurlinfo', []).forEach((item) => {
+      playUrl[item.songmid] = {
+        url: item.purl ? `${domain}${item.purl}`  : '',
+        error: !item.purl && '暂无播放链接'
+      };
+    });
+    res.json(playUrl)
   }).catch((e) => {
-    console.log("error")
+    console.log("error",e)
   })
 })
 

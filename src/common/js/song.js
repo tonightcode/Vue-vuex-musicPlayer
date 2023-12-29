@@ -108,7 +108,7 @@ export function getSongInfo(songmid) {
   return axios.get(url, {
     params: params
   }).then((res) => {
-    return Promise.resolve(res.data.req_0.data.midurlinfo)
+    return Promise.resolve(res)
   })
 }
 

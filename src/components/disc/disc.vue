@@ -45,13 +45,19 @@
       },
       _normalizeSongs(list) {
         let result = []
+        let songmids = []
         list.forEach((musicData) => {
-          // ------------- 更新的加上vkey
-          getSongInfo(musicData.songmid).then((res) => {
+          songmids.push(musicData.songmid)
+        })
+        // ------------- 更新的加上vkey
+        getSongInfo(songmids.join(',')).then((res) => {
+          list.forEach((musicData) => {
             if (musicData.songid && musicData.albummid) {
-              result.push(createSong(musicData, res.purl))
+              result.push(createSong(musicData, res[musicData.songmid]))
             }
           })
+        }).catch((e) => {
+          console.warn(e)
         })
         return result
       }
