@@ -53,7 +53,7 @@
         getSongInfo(songmids.join(',')).then((res) => {
           list.forEach((musicData) => {
             if (musicData.songid && musicData.albummid) {
-              result.push(createSong(musicData, res[musicData.songmid]))
+              result.push(createSong(musicData, res.data[musicData.songmid]['url']))
             }
           })
         }).catch((e) => {
